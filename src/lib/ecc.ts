@@ -13,21 +13,6 @@ const _N  = secp256k1.CURVE.n
 const FD  = Field(_N, 32, true)
 const GP  = secp256k1.Point.BASE
 
-export namespace ECC {
-  export const get_format       = ecc_get_pubkey_format
-  export const get_seckey       = ecc_get_seckey
-  export const get_pubkey       = ecc_get_pubkey
-  export const lift_point       = ecc_lift_point
-  export const serialize_pubkey = ecc_serialize_pubkey
-  export const sign_ecdsa       = ecc_sign_ecdsa
-  export const sign_bip340      = ecc_sign_bip340
-  export const tweak_seckey     = ecc_tweak_seckey
-  export const tweak_pubkey     = ecc_tweak_pubkey
-  export const verify_seckey    = ecc_verify_seckey
-  export const verify_pubkey    = ecc_verify_pubkey
-  export const verify_sig       = ecc_verify_signature
-}
-
 /**
  * Get the secret key from the given secret.
  * 
@@ -35,12 +20,12 @@ export namespace ECC {
  * @param even_y - Whether the y-coordinate should be even.
  * @returns The secret key.
  */
-function ecc_get_seckey (
+export function get_seckey (
   secret : string | Uint8Array,
   even_y : boolean = false
 ) : Buff {
   // Convert the secret to a bigint, modulo the curve order.
-  let sk = ecc_serialize_bytes(secret).big % _N
+  let sk = serialize_bytes(secret).big % _N
   // If the format is bip340:
   if (even_y) {
     // Multiply the generator point by the secret.
@@ -64,18 +49,18 @@ function ecc_get_seckey (
  * @param format - The format of the public key.
  * @returns The public key.
  */
-function ecc_get_pubkey (
+export function get_pubkey (
   seckey : string | Uint8Array,
   format : 'bip340' | 'ecdsa'
 ) : Buff {
   // Convert the secret to a bigint.
-  const sk = ecc_serialize_bytes(seckey).big
+  const sk = serialize_bytes(seckey).big
   // Multiply the generator point by the secret.
   const pt = GP.multiply(sk)
   // Return the public key.
   const pk = pt.toHex(true)
   // Normalize the public key.
-  return ecc_serialize_pubkey(pk, format)
+  return serialize_pubkey(pk, format)
 }
 
 /**
@@ -86,21 +71,21 @@ function ecc_get_pubkey (
  * @param even_y - Whether the y-coordinate should be even.
  * @returns The tweaked secret key.
  */
-function ecc_tweak_seckey (
+export function tweak_seckey (
   seckey : string | Uint8Array,
   tweak  : string | Uint8Array,
   even_y : boolean = false
 ) : Buff {
   // Convert the secret key to bigint.
-  const sk  = ecc_serialize_bytes(seckey).big
+  const sk  = serialize_bytes(seckey).big
   // Convert the tweak to bigint.
-  const twk = ecc_serialize_bytes(tweak).big
+  const twk = serialize_bytes(tweak).big
   // Add the key and tweak, modulo the curve order.
   const tweaked_sk = FD.add(sk, twk)
   // Convert the tweaked key to bytes.
   const new_secret = Buff.big(tweaked_sk)
   // Return the tweaked secret key.
-  return ecc_get_seckey(new_secret, even_y)
+  return get_seckey(new_secret, even_y)
 }
 
 /**
@@ -111,16 +96,16 @@ function ecc_tweak_seckey (
  * @param even_y - Whether the y-coordinate should be even.
  * @returns The tweaked public key.
  */
-function ecc_tweak_pubkey (
+export function tweak_pubkey (
   pubkey : string | Uint8Array,
   tweak  : string | Uint8Array,
   format : 'bip340' | 'ecdsa',
   even_y : boolean = false
 ) : Buff {
   // Convert the tweak to a bigint.
-  const twk_big  = ecc_serialize_bytes(tweak).big
+  const twk_big  = serialize_bytes(tweak).big
   // Convert the public key to a projective point.
-  const pub_pt   = ecc_lift_point(pubkey)
+  const pub_pt   = lift_point(pubkey)
   // Lift the tweak to a projective point.
   const tweak_pt = GP.multiply(twk_big)
   // Add the tweak to the public key.
@@ -133,7 +118,7 @@ function ecc_tweak_pubkey (
   // Convert the tweaked point to a hex string.
   const pk = tweaked_pt.toHex(true)
   // Return the normalized public key.
-  return ecc_serialize_pubkey(pk, format)
+  return serialize_pubkey(pk, format)
 }
 
 /**
@@ -141,11 +126,11 @@ function ecc_tweak_pubkey (
  * 
  * @param seckey - The secret key to verify.
  */
-function ecc_verify_seckey (
+export function verify_seckey (
   seckey : string | Uint8Array
 ) : asserts seckey is string {
   // Convert the secret key to bytes.
-  const sk = ecc_serialize_bytes(seckey)
+  const sk = serialize_bytes(seckey)
   // Assert the secret key is valid.
   Assert.size(sk, 32,    'ecdsa secret keys must be 32 bytes long')
   Assert.ok(sk.big < _N, 'ecdsa secret keys must be less than the curve order')
@@ -158,12 +143,12 @@ function ecc_verify_seckey (
  * @param pubkey - The public key to verify.
  * @param format - The format of the public key.
  */
-function ecc_verify_pubkey (
+export function verify_pubkey (
   pubkey : string | Uint8Array,
   format : 'bip340' | 'ecdsa'
 ) {
   // Convert the public key to bytes.
-  const pk = ecc_serialize_bytes(pubkey)
+  const pk = serialize_bytes(pubkey)
   // Assert the public key format is valid.
   if (format === 'bip340') {
     Assert.size(pk, 32, 'bip340 public keys must be 32 bytes long')
@@ -173,7 +158,7 @@ function ecc_verify_pubkey (
     throw new Error('invalid format: ' + format)
   }
   // Verify the point.
-  ecc_verify_point(pk)
+  verify_point(pk)
 }
 
 /**
@@ -183,11 +168,11 @@ function ecc_verify_pubkey (
  * @param message - The message to sign.
  * @returns The signature.
  */
-function ecc_sign_ecdsa (
+export function sign_ecdsa (
   seckey  : string | Uint8Array,
   message : string | Uint8Array
 ) : Buff {
-  const msg = ecc_serialize_bytes(message)
+  const msg = serialize_bytes(message)
   const sig = secp256k1.sign(msg, seckey).toDERRawBytes()
   return Buff.bytes(sig)
 }
@@ -199,13 +184,13 @@ function ecc_sign_ecdsa (
  * @param message - The message to sign.
  * @returns The signature.
  */
-function ecc_sign_bip340 (
+export function sign_bip340 (
   seckey  : string | Uint8Array,
   message : string | Uint8Array
 ) : Buff {
-  const msg = ecc_serialize_bytes(message)
+  const msg = serialize_bytes(message)
   const sig = schnorr.sign(msg, seckey)
-  return ecc_serialize_bytes(sig)
+  return serialize_bytes(sig)
 }
 
 /**
@@ -216,15 +201,15 @@ function ecc_sign_bip340 (
  * @param pubkey    - The public key to verify the signature against.
  * @param format    - The format of the public key.
  */
-function ecc_verify_signature (
+export function verify_signature (
   signature : string | Uint8Array,
   message   : string | Uint8Array,
   pubkey    : string | Uint8Array,
   format    : 'bip340' | 'ecdsa'
 ) : boolean {
-  const sig = ecc_serialize_bytes(signature)
-  const msg = ecc_serialize_bytes(message)
-  const pk  = ecc_serialize_pubkey(pubkey, format)
+  const sig = serialize_bytes(signature)
+  const msg = serialize_bytes(message)
+  const pk  = serialize_pubkey(pubkey, format)
   return (format === 'bip340')
     ? schnorr.verify(sig, msg, pk)
     : secp256k1.verify(sig, msg, pk)
@@ -236,11 +221,11 @@ function ecc_verify_signature (
  * 
  * @param pubkey - The pubkey to verify.
  */
-function ecc_verify_point (
+export function verify_point (
   pubkey : string | Uint8Array
 ) : asserts pubkey is string {
   try {
-    const pt = ecc_lift_point(pubkey)
+    const pt = lift_point(pubkey)
     pt.assertValidity()
   } catch (err) {
     throw new Error('invalid secp256k1 point: ' + pubkey)
@@ -253,12 +238,12 @@ function ecc_verify_point (
  * @param pubkey - The public key to lift.
  * @returns The lifted public key.
  */
-function ecc_lift_point (
+export function lift_point (
   pubkey : string | Uint8Array
 ) : ECCPoint {
   try {
-    const pk = ecc_serialize_pubkey(pubkey, 'ecdsa')
-    return secp256k1.ProjectivePoint.fromHex(pk)
+    const pk = serialize_pubkey(pubkey, 'ecdsa')
+    return secp256k1.Point.fromHex(pk)
   } catch (err) {
     throw new Error('invalid pubkey: ' + pubkey)
   }
@@ -271,12 +256,12 @@ function ecc_lift_point (
  * @param format - The format of the public key.
  * @returns The serialized public key.
  */
-function ecc_serialize_pubkey (
+export function serialize_pubkey (
   pubkey : string | Uint8Array,
   format : 'bip340' | 'ecdsa'
 ) : Buff {
   try {
-    const pk = ecc_serialize_bytes(pubkey)
+    const pk = serialize_bytes(pubkey)
     if (pk.length === 33 && format === 'bip340') {
       return pk.slice(1)
     } else if (pk.length === 32 && format === 'ecdsa') {
@@ -296,10 +281,10 @@ function ecc_serialize_pubkey (
  * @param pubkey - The public key to get the format of.
  * @returns The format of the public key.
  */
-function ecc_get_pubkey_format (
+export function get_pubkey_format (
   pubkey : string | Uint8Array
 ) : 'bip340' | 'ecdsa' {
-  const pk = ecc_serialize_bytes(pubkey)
+  const pk = serialize_bytes(pubkey)
   if (pk.length === 33) return 'ecdsa'
   if (pk.length === 32) return 'bip340'
   throw new Error('invalid pubkey: ' + String(pubkey))
@@ -311,7 +296,7 @@ function ecc_get_pubkey_format (
  * @param bytes - The bytes to serialize.
  * @returns The serialized bytes as a buffer object.
  */
-function ecc_serialize_bytes (bytes : string | Uint8Array) : Buff {
+export function serialize_bytes (bytes : string | Uint8Array) : Buff {
   try {
     return Buff.bytes(bytes)
   } catch (err) {
