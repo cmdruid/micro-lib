@@ -1,4 +1,4 @@
-import { Buff } from '@vbyte/buffy'
+import { Buff } from '@vbyte/buff'
 
 import { ripemd160 as r160 } from '@noble/hashes/legacy'
 import { sha256 as s256 }    from '@noble/hashes/sha2'

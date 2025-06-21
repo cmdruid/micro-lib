@@ -1,4 +1,4 @@
-import { Buff, Bytes } from '@vbyte/buffy'
+import { Buff, Bytes } from '@vbyte/buff'
 import { z }           from 'zod'
 
 export namespace Check {

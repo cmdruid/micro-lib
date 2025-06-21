@@ -1,6 +1,6 @@
 {
   "name": "@vbyte/micro-lib",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A collection of micro libraries, helper methods, and utilities.",
   "author": "Christopher Scott",
   "license": "MIT",
@@ -46,7 +46,7 @@
     "@scure/base": "^1.2.6",
     "@types/node": "^24.0.3",
     "@types/tape": "^5.8.1",
-    "@vbyte/buffy": "^1.0.0",
+    "@vbyte/buff": "^1.0.0",
     "faucet": "^0.0.4",
     "rollup": "^4.44.0",
     "tape": "^5.9.0",

@@ -1,4 +1,4 @@
-import { Buff }   from '@vbyte/buffy'
+import { Buff }   from '@vbyte/buff'
 import { Assert } from './validate.js'
 
 import { secp256k1, schnorr }  from '@noble/curves/secp256k1'

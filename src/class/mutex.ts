@@ -12,28 +12,45 @@ export class Mutex {
     return this._timeout
   }
 
+  /**
+   * Acquire the mutex.
+   * @returns A function to release the mutex.
+   */
   async lock () : Promise<() => void> {
+    // Define a variable to resolve the mutex.
     let resolve: () => void = () => {}
-    const newMutex = new Promise<void>((res) => {
+    // Create a new promise to resolve the mutex.
+    const next_mutex = new Promise<void>((res) => {
       resolve = res
     })
-
-    const promise = new Promise<never>((_, reject) => {
+    // Define a promise to reject the mutex if it times out.
+    const timeout = new Promise<never>((_, reject) => {
       setTimeout(() => reject(new Error('mutex timeout')), this._timeout)
     })
-
-    const oldMutex = this._mutex
-    this._mutex = Promise.race([ newMutex, promise ])
-
-    await oldMutex
+    // Define a variable to store the previous mutex.
+    const prev_mutex = this._mutex
+    // Update the mutex to the new promise.
+    this._mutex = next_mutex
+    // Wait for the mutex to be released.
+    await Promise.race([ prev_mutex, timeout ])
+    // Return the release function.
     return resolve
   }
 
+  /**
+   * Acquire the mutex and execute a function.
+   * @param fn - The function to execute.
+   * @returns The result of the function.
+   */
   async acquire <T> (fn: () => Promise<T>) : Promise<T> {
+    // Acquire the mutex.
     const release = await this.lock()
+    // Try to execute the function.
     try {
+      // Execute the function.
       return await fn()
     } finally {
+      // Release the mutex.
       release()
     }
   }

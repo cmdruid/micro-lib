@@ -1,4 +1,4 @@
-import { normalize_obj } from './helpers.js'
+import { normalize_obj } from './util.js'
 
 export namespace JsonUtil {
   export const parse     = parse_json
