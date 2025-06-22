@@ -37,6 +37,10 @@ export namespace Check {
     return false
   }
 
+  export function is_uint (value : unknown) : value is Uint8Array {
+    return value instanceof Uint8Array
+  }
+
   export function is_hash (value : unknown) : value is string {
     if (is_hex(value) && value.length === 64) {
       return true
@@ -87,6 +91,12 @@ export namespace Assert {
   export function is_hex (value : unknown) : asserts value is string {
     if (!Check.is_hex(value)) {
       throw new TypeError(`invalid hex: ${String(value)}`)
+    }
+  }
+
+  export function is_uint (value : unknown) : asserts value is Uint8Array {
+    if (!Check.is_uint(value)) {
+      throw new TypeError(`invalid uint: ${String(value)}`)
     }
   }
 

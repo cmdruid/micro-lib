@@ -1,5 +1,4 @@
-export * from './class/emitter.js'
-export * from './class/mutex.js'
+export * from './class/index.js'
 
 export * as ECC    from './lib/ecc.js'
 export * as Hash   from './lib/hash.js'
