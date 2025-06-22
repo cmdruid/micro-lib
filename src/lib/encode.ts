@@ -76,8 +76,7 @@ export namespace Bech32 {
     limit : number | false = false
   ) => {
     assert_bech32(data)
-    const { prefix, words } = bech32.decode(data, limit)
-    return { prefix, words }
+    return bech32.decode(data, limit)
   }
 
   export const is_valid = is_bech32
@@ -99,17 +98,15 @@ export namespace Bech32m {
   }
 
   export const decode = (
-    data  : `${string}1${string}`,
+    data  : string,
     limit : number | false = false
   ) => {
     assert_bech32(data)
-    const { prefix, words } = bech32m.decode(data, limit)
-    return { prefix, words }
+    return bech32m.decode(data, limit)
   }
 
   export const is_valid = is_bech32
 }
-
 
 function is_base58 (value : unknown) : value is string {
   return /^[1-9A-HJ-NP-Za-km-z]+$/.test(value as string)
