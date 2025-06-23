@@ -13,7 +13,7 @@ export function create_timeout <T> (
   })
 }
 
-export function normalize_obj <
+export function sort_obj <
   T extends Record<keyof T, any>
 > (obj : T) : T {
   if (obj instanceof Map || Array.isArray(obj) || typeof obj !== 'object') {

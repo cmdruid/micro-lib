@@ -1,4 +1,4 @@
-import { normalize_obj } from './util.js'
+import { sort_obj } from './util.js'
 
 export namespace JsonUtil {
   export const parse     = parse_json
@@ -42,7 +42,7 @@ function serialize_json <T = Record<string, unknown>> (
   replacer : JsonReplacer = REPLACER
 ) : string | null {
   try {
-    const normalized = normalize_obj(json_obj)
+    const normalized = sort_obj(json_obj)
     return JSON.stringify(normalized, replacer)
   } catch {
     return null
@@ -55,7 +55,7 @@ function parse_json <T = Record<string, unknown>> (
 ) : T | null {
   try {
     const parsed = JSON.parse(json_str, reviver)
-    return normalize_obj(parsed)
+    return sort_obj(parsed)
   } catch (error) {
     return null
   }

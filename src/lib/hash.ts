@@ -1,10 +1,10 @@
-import { Buff } from '@vbyte/buff'
+import { Buff, Buffable } from '@vbyte/buff'
 
 import { ripemd160 as r160 } from '@noble/hashes/legacy'
 import { sha256 as s256 }    from '@noble/hashes/sha2'
 
 export function hash160 (
-  ...input : (string | Uint8Array)[]
+  ...input : Buffable[]
 ) : Buff {
   const buffer = Buff.join(input)
   const digest = r160(s256(buffer))
@@ -12,7 +12,7 @@ export function hash160 (
 }
 
 export function sha256 (
-  ...input : (string | Uint8Array)[]
+  ...input : Buffable[]
 ) : Buff {
   const buffer = Buff.join(input)
   const digest = s256(buffer)
@@ -20,7 +20,7 @@ export function sha256 (
 }
 
 export function hash256 (
-  ...input : (string | Uint8Array)[]
+  ...input : Buffable[]
 ) : Buff {
   const buffer = Buff.join(input)
   const digest = s256(s256(buffer))
@@ -34,10 +34,10 @@ export function hashtag (tag : string) : Buff {
 
 export function hash340 (
   tag      : string,
-  ...input : (string | Uint8Array)[]
+  ...input : Buffable[]
 ) : Buff {
   const htag = hashtag(tag)
-  const data = input.map(e => Buff.bytes(e))
+  const data = input.map(e => new Buff(e))
   const pimg = Buff.join([ htag, ...data ])
   return sha256(pimg)
 }

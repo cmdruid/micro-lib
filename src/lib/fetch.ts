@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { normalize_obj, parse_error } from './util.js'
+import { sort_obj, parse_error } from './util.js'
 
 export type ApiResponse<T> = DataResponse<T> | ErrorResponse
 
@@ -97,7 +97,7 @@ export namespace Resolve {
     status : number = 200
   ) : DataResponse<T> {
     data = (data !== null && data !== undefined)
-      ? normalize_obj(data)
+      ? sort_obj(data)
       : data
     return { ok: true, status, data }
   }
