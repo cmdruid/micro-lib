@@ -2,10 +2,11 @@
   "compilerOptions": {
     "baseUrl": "..",
     "paths": {
-      "@/*"                : [ "./src/*" ],
-      "@source/buffy"      : [ "./src/index.js" ],
-      "@source/buffy/lib"  : [ "./src/lib/index.js"  ],
-      "@source/buffy/util" : [ "./src/util/index.js" ]
+      "@/*"        : [ "./src/*" ],
+      "@src      " : [ "./src/index.js" ],
+      "@src/lib"   : [ "./src/lib/index.js"  ],
+      "@src/util"  : [ "./src/util/index.js" ],
+      "@test"      : [ "./test/index.js" ]
     },
     "module": "NodeNext",
     "target": "ESNext",
