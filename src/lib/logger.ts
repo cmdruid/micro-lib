@@ -5,20 +5,25 @@ declare global {
   }
 }
 
+interface LoggerOptions {
+  width? : number,
+  flags? : GlobalFlags
+}
+
 /**
  * Create a logger with a given label and flags.
- * @param label - The label to use for the logger.
- * @param flags - The flags to use for the logger.
+ * @param label   - The label to use for the logger.
+ * @param options - The options to use for the logger.
  * @returns The logger API.
  */
 export function create_logger (
-  label  : string,
-  flags? : GlobalFlags
+  label   : string,
+  options : LoggerOptions = {}
 ) {
   // Unpack the flags from the global scope.
-  const { debug = false, verbose = true } = flags ?? {}
+  const { debug = false, verbose = true } = options.flags ?? {}
   // Create a prefixed string for consistent formatting
-  const prefix = '[' + label.padEnd(10, ' ') + ']'
+  const prefix = `[ ${label} ]`.padEnd(options.width ?? 10, ' ')
   // Create a no-op function for disabled loggers
   const noop = () => {}
   // Return the logger API.
