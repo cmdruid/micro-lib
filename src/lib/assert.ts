@@ -56,9 +56,27 @@ export namespace Assert {
     }
   }
 
+  export function is_uchar (value : unknown) : asserts value is number {
+    if (!Test.is_uchar(value)) {
+      throw new TypeError(`invalid unsignedchar: ${String(value)}`)
+    }
+  }
+
+  export function is_ushort (value : unknown) : asserts value is number {
+    if (!Test.is_ushort(value)) {
+      throw new TypeError(`invalid unsigned short: ${String(value)}`)
+    }
+  }
+
   export function is_uint (value : unknown) : asserts value is Uint8Array {
     if (!Test.is_uint(value)) {
-      throw new TypeError(`invalid uint: ${String(value)}`)
+      throw new TypeError(`invalid unsigned int: ${String(value)}`)
+    }
+  }
+
+  export function is_u8array (value : unknown) : asserts value is Uint8Array {
+    if (!Test.is_u8array(value)) {
+      throw new TypeError(`invalid Uint8Array: ${String(value)}`)
     }
   }
 

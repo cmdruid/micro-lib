@@ -35,14 +35,26 @@ export namespace Test {
   }
 
   export function is_number (value : unknown) : value is number {
-    return typeof value === 'number'
+    return Number.isInteger(value) && !Number.isNaN(value)
   }
 
   export function is_bigint (value : unknown) : value is bigint {
     return typeof value === 'bigint'
   }
 
-  export function is_uint (value : unknown) : value is Uint8Array {
+  export function is_uchar (value : unknown) : value is number {
+    return is_number(value) && value >= 0 && value <= 0xFF
+  }
+
+  export function is_ushort (value : unknown) : value is number {
+    return is_number(value) && value >= 0 && value <= 0xFFFF
+  }
+
+  export function is_uint (value : unknown) : value is number {
+    return is_number(value) && value >= 0 && value <= 0xFFFFFFFF
+  }
+
+  export function is_u8array (value : unknown) : value is Uint8Array {
     return value instanceof Uint8Array
   }
 
