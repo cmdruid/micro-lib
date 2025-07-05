@@ -20,6 +20,18 @@ export namespace Assert {
     }
   }
 
+  export function is_empty (value : unknown, msg ?: string) : asserts value is null | undefined {
+    if (value !== null && value !== undefined) {
+      throw new Error(msg ?? 'value is not null or undefined!')
+    }
+  }
+
+  export function is_instance <T> (value : unknown, type : new () => T, msg ?: string) : asserts value is T {
+    if (!(value instanceof type)) {
+      throw new Error(msg ?? `value is not an instance of ${type.name}`)
+    }
+  }
+
   export function is_equal (a : unknown, b : unknown, msg ?: string) : asserts a is typeof b {
     if (!Test.is_equal(a, b)) {
       throw new Error(msg ?? `values are not equal: ${String(a)} !== ${String(b)}`)
