@@ -43,7 +43,7 @@
   "unpkg": "./dist/script.js",
   "scripts": {
     "build": "./script/build.sh",
-    "pkg": "npm test | faucet && npm run build",
+    "package": "npm test | faucet && npm run build",
     "release": "./script/release.sh",
     "scratch": "npm run script test/scratch.ts",
     "script": "tsx --tsconfig ./test/tsconfig.json",
