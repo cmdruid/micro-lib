@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [1.0.13]
+
+- Fixed bug with secret key tweaking.
+- Split `verify_signature` into specifc methods for ECDSA and BIP340.
+
 ## [1.0.12]
 
 - Added new assertions.

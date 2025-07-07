@@ -77,7 +77,7 @@ export function tweak_seckey (
   even_y : boolean = false
 ) : Buff {
   // Convert the secret key to bigint.
-  const sk  = serialize_bytes(seckey).big
+  const sk  = get_seckey(seckey, even_y).big
   // Convert the tweak to bigint.
   const twk = serialize_bytes(tweak).big
   // Add the key and tweak, modulo the curve order.
@@ -85,7 +85,7 @@ export function tweak_seckey (
   // Convert the tweaked key to bytes.
   const new_secret = Buff.big(tweaked_sk)
   // Return the tweaked secret key.
-  return get_seckey(new_secret, even_y)
+  return get_seckey(new_secret, false)
 }
 
 /**
@@ -168,7 +168,7 @@ export function verify_pubkey (
  * @param message - The message to sign.
  * @returns The signature.
  */
-export function sign_ecdsa (
+export function get_ecdsa_sig (
   seckey  : string | Uint8Array,
   message : string | Uint8Array
 ) : Buff {
@@ -184,7 +184,7 @@ export function sign_ecdsa (
  * @param message - The message to sign.
  * @returns The signature.
  */
-export function sign_bip340 (
+export function get_bip340_sig (
   seckey  : string | Uint8Array,
   message : string | Uint8Array
 ) : Buff {
@@ -194,31 +194,45 @@ export function sign_bip340 (
 }
 
 /**
- * Verify the given signature.
+ * Verify the given ECDSA signature.
  * 
  * @param signature - The signature to verify.
  * @param message   - The message to verify the signature against.
  * @param pubkey    - The public key to verify the signature against.
- * @param format    - The format of the public key.
  */
-export function verify_signature (
+export function verify_ecdsa_sig (
   signature : string | Uint8Array,
   message   : string | Uint8Array,
   pubkey    : string | Uint8Array,
-  format    : 'bip340' | 'ecdsa'
 ) : boolean {
   const sig = serialize_bytes(signature)
   const msg = serialize_bytes(message)
-  const pk  = serialize_pubkey(pubkey, format)
-  return (format === 'bip340')
-    ? schnorr.verify(sig, msg, pk)
-    : secp256k1.verify(sig, msg, pk)
+  const pk  = serialize_pubkey(pubkey, 'ecdsa')
+  return secp256k1.verify(sig, msg, pk)
 }
 
 /**
- * Verify the given pubkey is a valid point
- * on the secp256k1 curve.
+ * Verify the given Schnorr signature.
  * 
+ * @param signature - The signature to verify.
+ * @param message   - The message to verify the signature against.
+ * @param pubkey    - The public key to verify the signature against.
+ */
+export function verify_bip340_sig (
+  signature : string | Uint8Array,
+  message   : string | Uint8Array,
+  pubkey    : string | Uint8Array
+) : boolean {
+  const sig = serialize_bytes(signature)
+  const msg = serialize_bytes(message)
+  const pk  = serialize_pubkey(pubkey, 'bip340')
+  return schnorr.verify(sig, msg, pk)
+}
+
+/**
+ * Ve, even_yrify the given pubkey is a valid point
+ * on the secp256k1 curve.
+ * , even_y
  * @param pubkey - The pubkey to verify.
  */
 export function verify_point (
