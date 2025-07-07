@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.0.14]
+
+- Fixed bug with encoder checking for `uint` instead of `u8a` (u8 Array).
+
 ## [1.0.13]
 
 - Fixed bug with secret key tweaking.

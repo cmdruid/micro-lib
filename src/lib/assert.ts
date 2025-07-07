@@ -86,8 +86,8 @@ export namespace Assert {
     }
   }
 
-  export function is_u8array (value : unknown) : asserts value is Uint8Array {
-    if (!Test.is_u8array(value)) {
+  export function is_u8a (value : unknown) : asserts value is Uint8Array {
+    if (!Test.is_u8a(value)) {
       throw new TypeError(`invalid Uint8Array: ${String(value)}`)
     }
   }

@@ -54,7 +54,7 @@ export namespace Test {
     return is_number(value) && value >= 0 && value <= 0xFFFFFFFF
   }
 
-  export function is_u8array (value : unknown) : value is Uint8Array {
+  export function is_u8a (value : unknown) : value is Uint8Array {
     return value instanceof Uint8Array
   }
 

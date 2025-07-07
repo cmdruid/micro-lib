@@ -10,8 +10,8 @@ import {
 } from '@scure/base'
 
 export namespace B58chk {
-  export const encode   = (data : Uint8Array) => {
-    Assert.is_uint(data)
+  export const encode = (data : Uint8Array) => {
+    Assert.is_u8a(data)
     return createBase58check(sha256).encode(data)
   }
 
@@ -23,7 +23,7 @@ export namespace B58chk {
 
 export namespace Base64 {
   export const encode   = (data : Uint8Array) => {
-    Assert.is_uint(data)
+    Assert.is_u8a(data)
     return base64.encode(data)
   }
 
@@ -35,7 +35,7 @@ export namespace Base64 {
 
 export namespace B64url {
   export const encode   = (data : Uint8Array) => {
-    Assert.is_uint(data)
+    Assert.is_u8a(data)
     return base64urlnopad.encode(data)
   }
 
