@@ -1,4 +1,4 @@
-import { sort_obj, parse_error } from './util.js'
+import { sort_obj } from './util.js'
 
 import type { JsonData } from '../types.js'
 
@@ -17,103 +17,86 @@ export interface ApiErrorResponse {
 }
 
 export namespace Fetch {
+  export type Type<T> = ApiResponse<T>
+  export const json = fetch_json
+  export const text = fetch_text
+}
 
-  export async function json (
-    input : URL | RequestInfo,
-    init ?: RequestInit,
-    fetcher = fetch
-  ) {
-    // Fetch response using fetcher.
-    const res = await fetcher(input, init)
-    // Resolve response as json.
-    return resolve_json(res)
-  }
+export namespace Respond {
+  export type Type<T> = ApiResponse<T>
+  export const json  = json_response
+  export const text  = text_response
+  export const error = error_response
+}
 
-  export async function text (
-    input : URL | RequestInfo,
-    init ?: RequestInit,
-    fetcher = fetch
-  ) {
-    // Fetch response using fetcher.
-    const res = await fetcher(input, init) 
-    // Resolve response as text.
-    return resolve_text(res)
-  }
-
-  /**
-   * Helper method for resolving json from HTTP responses.
-   */
-  async function resolve_json (
-    res : Response
-  ) : Promise<ApiResponse<JsonData>> {
-    // Try to resolve the data:
-    if (!res.ok) {
-      return resolve_error(res)
-    } else {
-      const data = await res.json()
-      return { status: res.status, ok: true, data }
-    }
-  }
-
-  /**
-   * Helper method for resolving text from HTTP responses.
-   */
-  async function resolve_text (
-    res : Response
-  ) : Promise<ApiResponse<string>> {
-    // Unpack response object.
-    // Try to resolve the data:
-    if (!res.ok) {
-      return resolve_error(res)
-    } else {
-      const data = await res.text()
-      return { status: res.status, ok: true, data }
-    }
-  }
-
-  /**
-   * Helper method for resolving text from HTTP responses.
-   */
-  async function resolve_error (
-    res : Response
-  ) : Promise<ApiErrorResponse> {
-    // Unpack response object.
-    const { status, statusText } = res
-    // Try to resolve the data:
-    let error : string
-    try {
-      error = await res.text()
-    } catch {
-      error = statusText
-    }
-    return { error, status, ok: false }
+export async function fetch_json (
+  input : URL | RequestInfo,
+  init ?: RequestInit,
+  fetcher = fetch
+) {
+  // Fetch response using fetcher.
+  const res = await fetcher(input, init)
+  // Resolve response as json.
+  if (!res.ok) {
+    return resolve_error(res)
+  } else {
+    const data = await res.json()
+    return { status: res.status, ok: true, data }
   }
 }
 
-export namespace Resolve {
-
-  export function data <T> (
-    data   : T,
-    status : number = 200
-  ) : ApiDataResponse<T> {
-    data = (data !== null && data !== undefined)
-      ? sort_obj(data)
-      : data
-    return { ok: true, status, data }
+export async function fetch_text (
+  input : URL | RequestInfo,
+  init ?: RequestInit,
+  fetcher = fetch
+) {
+  // Fetch response using fetcher.
+  const res = await fetcher(input, init) 
+  // Resolve response as text.
+  if (!res.ok) {
+    return resolve_error(res)
+  } else {
+    const data = await res.text()
+    return { status: res.status, ok: true, data }
   }
+}
 
-  export function error (
-    error  : unknown,
-    status : number = 600
-  ) : ApiErrorResponse {
-    const msg = parse_error(error)
-    return { ok: false, status, error: msg }
+async function resolve_error (
+  res : Response
+) : Promise<ApiErrorResponse> {
+  // Unpack response object.
+  const { status, statusText } = res
+  // Try to resolve the data:
+  let error : string
+  try {
+    error = await res.text()
+  } catch {
+    error = statusText
   }
+  return { error, status, ok: false }
+}
 
-  export function reject (
-    reason : string,
-    status : number = 600
-  ) : ApiErrorResponse {
-    return { ok: false, status, error: reason }
-  }
+function json_response (
+  data   : JsonData,
+  status : number = 200
+) : ApiDataResponse<JsonData> {
+  data = (data !== null && data !== undefined)
+    ? sort_obj(data)
+    : data
+  return { ok: true, status, data }
+}
+
+function text_response (
+  data   : string,
+  status : number = 200
+) : ApiDataResponse<string> {
+  return { ok: true, status, data }
+}
+
+function error_response (
+  error  : unknown,
+  status : number = 600
+) : ApiErrorResponse {
+  const msg = (error instanceof Error) ? error.message : String(error)
+  return { ok: false, status, error: msg }
 }

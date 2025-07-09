@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.0.16]
+
+- Further refined `exec` (formerly `result`) and `fetch` libraries.
+
 ## [1.0.15]
 
 - Refactored interface for `Logger`. Now is a namespace with multiple options, and better option initialization.

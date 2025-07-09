@@ -1,6 +1,6 @@
 {
   "name": "@vbyte/micro-lib",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "A collection of micro libraries, helper methods, and utilities.",
   "author": "Christopher Scott",
   "license": "MIT",
@@ -29,11 +29,11 @@
     "./class"    : "./dist/class/index.js",
     "./ecc"      : "./dist/lib/ecc.js",
     "./encode"   : "./dist/lib/encode.js",
+    "./exec"     : "./dist/lib/exec.js",
     "./fetch"    : "./dist/lib/fetch.js",
     "./hash"     : "./dist/lib/hash.js",
     "./json"     : "./dist/lib/json.js",
     "./logger"   : "./dist/lib/logger.js",
-    "./result"   : "./dist/lib/result.js",
     "./schema"   : "./dist/lib/schema.js",
     "./test"     : "./dist/lib/test.js",
     "./util"     : "./dist/lib/util.js"
