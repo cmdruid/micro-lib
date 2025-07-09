@@ -42,18 +42,20 @@ function wrap_function <T = any> (fn : () => T) : ExecResult<T> {
 }
 
 async function wrap_promise <T = any> (
-  promise : Promise<T>,
-  timeout : number
+  promise  : Promise<T>,
+  timeout? : number
 ) : Promise<ExecResult<T>> {
   // Create a timer for the promise.
   let timer : NodeJS.Timeout
   // Return a new promise.
   return new Promise<ExecResult<T>>((resolve) => {
-    // Handle timeout.
-    timer = setTimeout(() => {
-      resolve(result_err('timeout'))
-    }, timeout)
-    // Handle original promise
+    if (timeout) {
+      // Handle timeout.
+      timer = setTimeout(() => {
+        resolve(result_err('timeout'))
+      }, timeout)
+    }
+    // Handle original promise.
     promise
       .then(data => {
         clearTimeout(timer)

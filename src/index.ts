@@ -7,10 +7,10 @@ export * as Util   from './lib/util.js'
 
 export * from './lib/assert.js'
 export * from './lib/encode.js'
+export * from './lib/exec.js'
 export * from './lib/fetch.js'
 export * from './lib/json.js'
 export * from './lib/logger.js'
 export * from './lib/test.js'
-export * from './lib/result.js'
 
 export * from './types.js'
