@@ -22,7 +22,7 @@ export namespace Fetch {
   export const text = fetch_text
 }
 
-export namespace Respond {
+export namespace Resolve {
   export type Type<T> = ApiResponse<T>
   export const json  = json_response
   export const text  = text_response

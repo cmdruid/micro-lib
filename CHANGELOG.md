@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.0.17]
+
+- Further refinements to `fetch` library.
+
 ## [1.0.16]
 
 - Further refined `exec` (formerly `result`) and `fetch` libraries.
