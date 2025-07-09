@@ -1,16 +1,16 @@
-import { z } from 'zod'
-
 import { sort_obj, parse_error } from './util.js'
 
-export type ApiResponse<T> = DataResponse<T> | ErrorResponse
+import type { JsonData } from '../types.js'
 
-export interface DataResponse<T> {
+export type ApiResponse<T> = ApiDataResponse<T> | ApiErrorResponse
+
+export interface ApiDataResponse<T> {
   ok     : true
   data   : T
   status : number
 }
 
-export interface ErrorResponse {
+export interface ApiErrorResponse {
   ok     : false
   error  : string
   status : number
@@ -18,7 +18,7 @@ export interface ErrorResponse {
 
 export namespace Fetch {
 
-  export async function json <T> (
+  export async function json (
     input : URL | RequestInfo,
     init ?: RequestInit,
     fetcher = fetch
@@ -26,7 +26,7 @@ export namespace Fetch {
     // Fetch response using fetcher.
     const res = await fetcher(input, init)
     // Resolve response as json.
-    return resolve_json<T>(res)
+    return resolve_json(res)
   }
 
   export async function text (
@@ -43,14 +43,14 @@ export namespace Fetch {
   /**
    * Helper method for resolving json from HTTP responses.
    */
-  async function resolve_json <T = Record<string, any>> (
+  async function resolve_json (
     res : Response
-  ) : Promise<ApiResponse<T>> {
+  ) : Promise<ApiResponse<JsonData>> {
     // Try to resolve the data:
     if (!res.ok) {
       return resolve_error(res)
     } else {
-      const data = await res.json() as T
+      const data = await res.json()
       return { status: res.status, ok: true, data }
     }
   }
@@ -76,7 +76,7 @@ export namespace Fetch {
    */
   async function resolve_error (
     res : Response
-  ) : Promise<ErrorResponse> {
+  ) : Promise<ApiErrorResponse> {
     // Unpack response object.
     const { status, statusText } = res
     // Try to resolve the data:
@@ -95,28 +95,17 @@ export namespace Resolve {
   export function data <T> (
     data   : T,
     status : number = 200
-  ) : DataResponse<T> {
+  ) : ApiDataResponse<T> {
     data = (data !== null && data !== undefined)
       ? sort_obj(data)
       : data
     return { ok: true, status, data }
   }
 
-  export function schema <S extends z.ZodTypeAny> (
-    data   : unknown,
-    schema : S,
-    err_code = 600
-  ) : ApiResponse<z.infer<S>> {
-    const parsed = schema.safeParse(data)
-    return parsed.success
-      ? { ok: true,  status: 200, data: parsed.data }
-      : { ok: false, status: err_code, error: parsed.error.toString() }
-  }
-
   export function error (
     error  : unknown,
     status : number = 600
-  ) : ErrorResponse {
+  ) : ApiErrorResponse {
     const msg = parse_error(error)
     return { ok: false, status, error: msg }
   }
@@ -124,7 +113,7 @@ export namespace Resolve {
   export function reject (
     reason : string,
     status : number = 600
-  ) : ErrorResponse {
+  ) : ApiErrorResponse {
     return { ok: false, status, error: reason }
   }
 }

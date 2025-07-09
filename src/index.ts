@@ -11,4 +11,6 @@ export * from './lib/fetch.js'
 export * from './lib/json.js'
 export * from './lib/logger.js'
 export * from './lib/test.js'
-export * from './lib/wrap.js'
+export * from './lib/result.js'
+
+export * from './types.js'

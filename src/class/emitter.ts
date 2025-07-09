@@ -1,13 +1,13 @@
 /**
  * Type-safe event emitter that handles synchronous and asynchronous event subscriptions.
  * Provides a robust event system with support for one-time events, timeouts, and wildcard handlers.
- * @template T Record of event names mapped to their payload types
+ * @template T Record of event names mapped to their payload types (array of parameters)
  */
-export class EventEmitter<T extends Record<string, any> = {}> {
-  private readonly eventMap: Map<keyof T | '*', Set<Function>>;
+export class EventEmitter<T extends Record<string, any[]> = {}> {
+  private readonly eventMap: Map<keyof T | '*', Set<Function>>
 
   constructor() {
-    this.eventMap = new Map();
+    this.eventMap = new Map()
   }
 
   /**
@@ -17,13 +17,13 @@ export class EventEmitter<T extends Record<string, any> = {}> {
    * @returns          Set of handler functions for the event
    */
   private getEventHandlers(eventName: string): Set<Function> {
-    const handlers = this.eventMap.get(eventName);
+    const handlers = this.eventMap.get(eventName)
     if (!handlers) {
-      const newHandlers = new Set<Function>();
-      this.eventMap.set(eventName, newHandlers);
-      return newHandlers;
+      const newHandlers = new Set<Function>()
+      this.eventMap.set(eventName, newHandlers)
+      return newHandlers
     }
-    return handlers;
+    return handlers
   }
 
   /**
@@ -32,8 +32,8 @@ export class EventEmitter<T extends Record<string, any> = {}> {
    * @returns         True if the event has subscribers, false otherwise
    */
   public has<K extends keyof T>(eventName: K): boolean {
-    const handlers = this.eventMap.get(eventName);
-    return handlers !== undefined && handlers.size > 0;
+    const handlers = this.eventMap.get(eventName)
+    return handlers !== undefined && handlers.size > 0
   }
 
   /**
@@ -44,9 +44,9 @@ export class EventEmitter<T extends Record<string, any> = {}> {
    */
   public on<K extends keyof T>(
     eventName: K,
-    handler: (payload: T[K]) => void | Promise<void>
+    handler: (...args: T[K]) => void | Promise<void>
   ): void {
-    this.getEventHandlers(eventName as string).add(handler);
+    this.getEventHandlers(eventName as string).add(handler)
   }
 
   /**
@@ -57,13 +57,13 @@ export class EventEmitter<T extends Record<string, any> = {}> {
    */
   public once<K extends keyof T>(
     eventName: K,
-    handler: (payload: T[K]) => void | Promise<void>
+    handler: (...args: T[K]) => void | Promise<void>
   ): void {
-    const oneTimeHandler = (payload: T[K]): void => {
-      this.off(eventName as string, oneTimeHandler);
-      void handler(payload);
-    };
-    this.on(eventName, oneTimeHandler);
+    const oneTimeHandler = (...args: T[K]): void => {
+      this.off(eventName as string, oneTimeHandler)
+      void handler(...args)
+    }
+    this.on(eventName, oneTimeHandler)
   }
 
   /**
@@ -75,47 +75,47 @@ export class EventEmitter<T extends Record<string, any> = {}> {
    */
   public within<K extends keyof T>(
     eventName: K,
-    handler: (payload: T[K]) => void | Promise<void>,
+    handler: (...args: T[K]) => void | Promise<void>,
     timeoutMs: number
   ): void {
-    const timeoutHandler = (payload: T[K]): void => {
-      void handler(payload);
-    };
+    const timeoutHandler = (...args: T[K]): void => {
+      void handler(...args)
+    }
 
     setTimeout(() => {
-      this.off(eventName as string, timeoutHandler);
-    }, timeoutMs);
+      this.off(eventName as string, timeoutHandler)
+    }, timeoutMs)
 
-    this.on(eventName, timeoutHandler);
+    this.on(eventName, timeoutHandler)
   }
 
   /**
-   * Emits an event with the given payload to all subscribers.
+   * Emits an event with the given parameters to all subscribers.
    * Handles both synchronous and asynchronous event handlers.
    * @param eventName  Name of the event to emit
-   * @param payload    Data to be passed to event handlers
-   * @emits *         Also triggers wildcard handlers with event name and payload
+   * @param args       Parameters to be passed to event handlers
+   * @emits *         Also triggers wildcard handlers with event name and parameters
    */
-  public emit<K extends keyof T>(eventName: K, payload: T[K]): void {
-    const promises: Promise<any>[] = [];
+  public emit<K extends keyof T>(eventName: K, ...args: T[K]): void {
+    const promises: Promise<any>[] = []
 
     // Call specific event handlers
     this.getEventHandlers(eventName as string).forEach(handler => {
-      const result = handler(payload);
+      const result = handler(...args)
       if (result instanceof Promise) {
-        promises.push(result);
+        promises.push(result)
       }
     });
 
     // Call wildcard handlers
     this.getEventHandlers('*').forEach(handler => {
-      const result = handler(eventName, payload);
+      const result = handler(eventName, ...args)
       if (result instanceof Promise) {
-        promises.push(result);
+        promises.push(result)
       }
-    });
+    })
 
-    void Promise.allSettled(promises);
+    void Promise.allSettled(promises)
   }
 
   /**
@@ -125,7 +125,7 @@ export class EventEmitter<T extends Record<string, any> = {}> {
    */
   public off<K extends keyof T>(
     eventName: string,
-    handler: (payload: T[K]) => void | Promise<void>
+    handler: (...args: T[K]) => void | Promise<void>
   ): void {
     this.getEventHandlers(eventName).delete(handler);
   }
@@ -135,6 +135,6 @@ export class EventEmitter<T extends Record<string, any> = {}> {
    * @param eventName  Name of the event to clear handlers for
    */
   public clear(eventName: string): void {
-    this.eventMap.delete(eventName);
+    this.eventMap.delete(eventName)
   }
 }
