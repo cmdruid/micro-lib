@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.0.18]
+
+- Fixed type bug with `fetch` library.
+
 ## [1.0.17]
 
 - Further refinements to `fetch` library.

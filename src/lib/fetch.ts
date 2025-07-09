@@ -1,5 +1,3 @@
-import { sort_obj } from './util.js'
-
 import type { JsonData } from '../types.js'
 
 export type ApiResponse<T> = ApiDataResponse<T> | ApiErrorResponse
@@ -24,8 +22,7 @@ export namespace Fetch {
 
 export namespace Resolve {
   export type Type<T> = ApiResponse<T>
-  export const json  = json_response
-  export const text  = text_response
+  export const data  = data_response
   export const error = error_response
 }
 
@@ -41,7 +38,7 @@ export async function fetch_json (
     return resolve_error(res)
   } else {
     const data = await res.json()
-    return { status: res.status, ok: true, data }
+    return data_response<JsonData>(data, res.status)
   }
 }
 
@@ -57,7 +54,7 @@ export async function fetch_text (
     return resolve_error(res)
   } else {
     const data = await res.text()
-    return { status: res.status, ok: true, data }
+    return data_response<string>(data, res.status)
   }
 }
 
@@ -76,20 +73,10 @@ async function resolve_error (
   return { error, status, ok: false }
 }
 
-function json_response (
-  data   : JsonData,
+function data_response <T = JsonData> (
+  data   : T,
   status : number = 200
-) : ApiDataResponse<JsonData> {
-  data = (data !== null && data !== undefined)
-    ? sort_obj(data)
-    : data
-  return { ok: true, status, data }
-}
-
-function text_response (
-  data   : string,
-  status : number = 200
-) : ApiDataResponse<string> {
+) : ApiDataResponse<T> {
   return { ok: true, status, data }
 }
 
