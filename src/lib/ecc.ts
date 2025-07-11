@@ -111,7 +111,7 @@ export function tweak_pubkey (
   // Add the tweak to the public key.
   let tweaked_pt = pub_pt.add(tweak_pt)
   // If the format is bip340 and the y-coordinate is odd,
-  if (even_y && !tweaked_pt.hasEvenY()) {
+  if (even_y && tweaked_pt.y % _2n !== _0n) {
     // Negate the point.
     tweaked_pt = tweaked_pt.negate()
   }
@@ -168,7 +168,7 @@ export function verify_pubkey (
  * @param message - The message to sign.
  * @returns The signature.
  */
-export function get_ecdsa_sig (
+export function sign_ecdsa (
   seckey  : string | Uint8Array,
   message : string | Uint8Array
 ) : Buff {
@@ -184,7 +184,7 @@ export function get_ecdsa_sig (
  * @param message - The message to sign.
  * @returns The signature.
  */
-export function get_bip340_sig (
+export function sign_bip340 (
   seckey  : string | Uint8Array,
   message : string | Uint8Array
 ) : Buff {
@@ -200,7 +200,7 @@ export function get_bip340_sig (
  * @param message   - The message to verify the signature against.
  * @param pubkey    - The public key to verify the signature against.
  */
-export function verify_ecdsa_sig (
+export function verify_ecdsa (
   signature : string | Uint8Array,
   message   : string | Uint8Array,
   pubkey    : string | Uint8Array,
@@ -218,7 +218,7 @@ export function verify_ecdsa_sig (
  * @param message   - The message to verify the signature against.
  * @param pubkey    - The public key to verify the signature against.
  */
-export function verify_bip340_sig (
+export function verify_bip340 (
   signature : string | Uint8Array,
   message   : string | Uint8Array,
   pubkey    : string | Uint8Array

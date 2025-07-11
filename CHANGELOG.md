@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [1.1.0]
+
+- Updated packages.
+- Made changes to `ECC` interface.
+
 ## [1.0.18]
 
 - Fixed type bug with `fetch` library.
