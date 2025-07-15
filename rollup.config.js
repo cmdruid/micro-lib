@@ -15,6 +15,10 @@ const onwarn = (warning) => {
     warning.message.includes('@__PURE__')
   ) {
     return
+  } else if (warning.code === 'CIRCULAR_DEPENDENCY') {
+    return
+  } else {
+    console.error(warning)
   }
   throw new Error(warning)
 }
