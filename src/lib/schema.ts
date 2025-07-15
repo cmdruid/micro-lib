@@ -33,7 +33,7 @@ export const literal = z.union([
 ])
 
 export const json : z.ZodType<Json> = z.lazy(() =>
-  z.union([ literal, z.array(json), z.record(json) ])
+  z.union([ literal, z.array(json), z.record(str, json) ])
 )
 
 export const u8a20    = u8a.refine((e) => e.length === 20)
