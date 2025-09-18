@@ -12,7 +12,7 @@ export interface ErrResult {
   error : string
 }
 
-export namespace Execute {
+export namespace Exec {
   export type Type<T> = ExecResult<T>
   export const fn     = wrap_function
   export const prom   = wrap_promise

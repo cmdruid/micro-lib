@@ -1,5 +1,5 @@
 import { Buff, Bytes } from '@vbyte/buff'
-import { Test }       from './test.js'
+import { Test }        from './test.js'
 
 export namespace Assert {
   export function ok (

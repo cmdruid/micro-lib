@@ -3,10 +3,11 @@ export const sleep = (ms : number = 1000) => new Promise(res => setTimeout(res, 
 
 export function create_timeout <T> (
   promise  : Promise<T>,
-  timeout  : number
+  timeout  : number,
+  reason?  : string
 ) : Promise<T> {
   return new Promise(async (resolve, reject) => {
-    const timer = setTimeout(() => reject('timeout'), timeout)
+    const timer = setTimeout(() => reject(reason || 'timeout'), timeout)
     const res   = await promise
     clearTimeout(timer)
     resolve(res)

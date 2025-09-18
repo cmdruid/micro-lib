@@ -1,9 +1,8 @@
 export * from './class/index.js'
 
-export * as ECC    from './lib/ecc.js'
-export * as Hash   from './lib/hash.js'
-export * as Schema from './lib/schema.js'
-export * as Util   from './lib/util.js'
+export * as ECC  from './lib/ecc.js'
+export * as Hash from './lib/hash.js'
+export * as Util from './lib/util.js'
 
 export * from './lib/assert.js'
 export * from './lib/encode.js'
